@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/filmus-frontend/static/css/main.f427d7f8.css",
+    "main.js": "/filmus-frontend/static/js/main.ce0bea30.js",
+    "index.html": "/filmus-frontend/index.html",
+    "main.f427d7f8.css.map": "/filmus-frontend/static/css/main.f427d7f8.css.map",
+    "main.ce0bea30.js.map": "/filmus-frontend/static/js/main.ce0bea30.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f427d7f8.css",
+    "static/js/main.ce0bea30.js"
+  ]
+}
