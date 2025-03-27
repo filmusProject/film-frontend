@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/filmus-frontend/static/css/main.f427d7f8.css",
-    "main.js": "/filmus-frontend/static/js/main.cde73a42.js",
-    "index.html": "/filmus-frontend/index.html",
-    "main.f427d7f8.css.map": "/filmus-frontend/static/css/main.f427d7f8.css.map",
-    "main.cde73a42.js.map": "/filmus-frontend/static/js/main.cde73a42.js.map"
+    "main.css": "/film-frontend/static/css/main.f427d7f8.css",
+    "main.js": "/film-frontend/static/js/main.ab3bcac5.js",
+    "index.html": "/film-frontend/index.html",
+    "main.f427d7f8.css.map": "/film-frontend/static/css/main.f427d7f8.css.map",
+    "main.ab3bcac5.js.map": "/film-frontend/static/js/main.ab3bcac5.js.map"
   },
   "entrypoints": [
     "static/css/main.f427d7f8.css",
-    "static/js/main.cde73a42.js"
+    "static/js/main.ab3bcac5.js"
   ]
 }
