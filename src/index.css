@@ -1,0 +1,14 @@
+/* src/index.css */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 스크롤바 숨기기 유틸리티 */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}

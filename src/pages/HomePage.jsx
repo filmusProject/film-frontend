@@ -61,7 +61,7 @@ const HomePage = () => {
               {[1, 2, 3].map((i) => (
                 <Link key={i} to="/movie-detail" className="movie-card flex-none w-48 relative">
                   <img
-                    src="https://via.placeholder.com/192x288?text=Movie+Poster"
+                    src="http://file.koreafilm.or.kr/thm/02/00/05/25/tn_DPF018752.jpg"
                     className="w-full h-72 object-cover rounded-lg"
                     alt="영화 포스터"
                   />
