@@ -34,3 +34,5 @@ function App() {
 }
 
 export default App;
+
+console.log("배포 확인용 v1.1");
