@@ -1,35 +1,56 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import Layout from '../components/Layout'; // 경로는 src/pages에서 시작한다고 가정
+import Layout from '../components/Layout';
+import axios from 'axios';
 
 const SearchPage = () => {
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const keyword = queryParams.get('query') || '';
+  const keyword = new URLSearchParams(useLocation().search).get('query') || '';
+  const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const dummyResults = Array.from({ length: 12 }, (_, i) => ({
-    id: i + 1,
-    title: `검색 결과 영화 ${i + 1}`,
-    year: 2024 - i,
-    image: "https://via.placeholder.com/192x288?text=Movie"
-  }));
+  useEffect(() => {
+    if (!keyword) return;
+
+    setLoading(true);
+    axios.get(`/api/movie/search?query=${encodeURIComponent(keyword)}`)
+      .then(res => setMovies(res.data.movies))
+      .catch(setError)
+      .finally(() => setLoading(false));
+  }, [keyword]);
 
   return (
-    <Layout>  {/* Layout 적용 시작 */}
-    <div className="min-h-screen bg-[#121212] text-white font-sans px-6 py-20">
-      <h1 className="text-2xl font-bold mb-4">🔍 '{keyword}' 검색 결과</h1>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-        {dummyResults.map(movie => (
-          <Link to="/movie-detail" key={movie.id} className="bg-[#2A2A2A] rounded-lg overflow-hidden hover:shadow-lg">
-            <img src={movie.image} alt={movie.title} className="w-full h-72 object-cover" />
-            <div className="p-2 flex justify-between items-center text-sm">
-              <span>{movie.title}</span>
-              <span className="opacity-70">{movie.year}</span>
-            </div>
-          </Link>
-        ))}
+    <Layout>
+      <div className="min-h-screen bg-[#121212] text-white font-sans px-6 py-20">
+        <h1 className="text-2xl font-bold mb-4">🔍 '{keyword}' 검색 결과 ({movies.length}건)</h1>
+
+        {loading && <div className="text-gray-400">검색 중입니다...</div>}
+        {error && <div className="text-gray-400">에러가 발생했습니다. 다시 시도해주세요.</div>}
+
+        {!loading && !error && movies.length === 0 && (
+          <div className="text-gray-400">검색 결과가 없습니다.</div>
+        )}
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+          {movies.map(({ movieId, movieSeq, posterUrl, title, year }) => (
+            <Link
+              to={`/movie-detail/${movieId}/${movieSeq}`}
+              key={`${movieId}-${movieSeq}`}
+              className="bg-[#2A2A2A] rounded-lg overflow-hidden hover:shadow-lg"
+            >
+              <img
+                src={posterUrl || "https://via.placeholder.com/192x288?text=No+Image"}
+                alt={title.trim()}
+                className="w-full h-72 object-cover"
+              />
+              <div className="p-2 flex justify-between items-center text-sm">
+                <span>{title.trim()}</span>
+                <span className="opacity-70">{year}</span>
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
-    </div>
     </Layout>
   );
 };
