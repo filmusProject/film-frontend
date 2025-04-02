@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
+    "axios": "^1.8.4",
     "gh-pages": "^6.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -24,6 +25,7 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build"
   },
+  "proxy": "http://filmus.o-r.kr",
   "browserslist": {
     "production": [
       ">0.2%",
