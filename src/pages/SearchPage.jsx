@@ -1,7 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Layout from '../components/Layout';
-import axios from 'axios';
+import axios from "axios";
+
+const API = process.env.REACT_APP_API_BASE_URL;
+
+axios.get(`${API}/api/movies`)
+    .then(response => {
+      console.log(response.data);
+    })
+    .catch(error => {
+      console.error(error);
+    });
 
 const SearchPage = () => {
   const keyword = new URLSearchParams(useLocation().search).get('query') || '';
