@@ -1,44 +1,37 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
-import axios from 'axios';
+import { useAuth } from '../contexts/AuthContext';
 import { Link } from 'react-router-dom';
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ username: '', password: '' });
+  const { login: authLogin } = useAuth(); // Rename the login function from useAuth
+  const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState(null);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+// LoginPage.jsx
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null); // 에러 초기화
+    setError(null);
 
     try {
-      const response = await axios.post('/api/auth/login', form, {
-        withCredentials: true // ✅ Refresh Token (HttpOnly Cookie) 받기 위해 필요
-      });
-
-      const accessToken = response.data.accessToken || response.headers['authorization'];
-      if (accessToken) {
-        localStorage.setItem('accessToken', accessToken); // ✅ Access Token 저장
-        alert("로그인 성공!");
-        navigate('/mypage');
-      } else {
-        setError('서버에서 토큰을 전달하지 않았습니다.');
-      }
+      await authLogin(form);
+      alert("로그인 성공!");
+      navigate('/'); // ✅ 메인페이지로 이동
     } catch (err) {
-      if (err.response?.status === 401) {
+      const code = err.response?.data?.code;
+      if (code === 'INVALID_CREDENTIALS') {
         setError('아이디 또는 비밀번호가 올바르지 않습니다.');
       } else {
         setError('로그인 중 문제가 발생했습니다.');
       }
     }
   };
-
   return (
     <Layout>
       <div className="min-h-screen bg-[#121212] text-white font-sans px-6 py-20">
@@ -49,10 +42,11 @@ const LoginPage = () => {
               <label className="block mb-1">아이디</label>
               <input
                 type="text"
-                name="username"
-                value={form.username}
+                name="email"
+                value={form.email}
                 onChange={handleChange}
                 required
+                autoComplete="email"
                 className="w-full bg-[#2A2A2A] text-white px-4 py-2 rounded-lg"
               />
             </div>

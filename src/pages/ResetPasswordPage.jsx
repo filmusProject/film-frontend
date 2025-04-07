@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
-import axios from 'axios';
+import axios from '../utils/axiosInstance';
 
 const ResetPasswordPage = () => {
   const [email, setEmail] = useState('');
@@ -13,10 +13,7 @@ const ResetPasswordPage = () => {
     setError('');
 
     try {
-      await axios.post('/api/auth/reset-password', null, {
-        params: { email }
-      });
-
+      await axios.post('/api/user/password/reset', { email });
       setSubmitted(true);
     } catch (err) {
       if (err.response?.status === 404) {
