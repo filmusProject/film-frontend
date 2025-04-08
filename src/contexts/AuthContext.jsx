@@ -3,16 +3,18 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import * as authAPI from '../api/auth';
 import axios from '../utils/axiosInstance';
+import { useNavigate } from 'react-router-dom';
 
 // 1. Context 생성
 const AuthContext = createContext();
 
-// 2. Provider 컴포넌트 정의 (전역 상태 제공)
+// 2. Provider 컴포넌트 정의
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
-    // 앱 최초 로딩 시 로그인 상태 확인
+    // 최초 마운트 시 로그인 상태 확인
     useEffect(() => {
         const token = localStorage.getItem('accessToken');
         if (!token) {
@@ -20,10 +22,9 @@ export const AuthProvider = ({ children }) => {
             return;
         }
 
-        // accessToken이 있다면 사용자 정보 요청
         axios.get('/user/me')
             .then((res) => {
-                setUser(res.data); // 로그인된 유저 정보 저장
+                setUser(res.data);
             })
             .catch(() => {
                 localStorage.removeItem('accessToken');
@@ -34,16 +35,27 @@ export const AuthProvider = ({ children }) => {
 
     // 로그인 처리
     const login = async (form) => {
-        await authAPI.login(form);              // 로그인 요청
-        const res = await axios.get('/user/me'); // 사용자 정보 재요청
-        setUser(res.data);
+        // ✅ 로그인 시 액세스 토큰 저장 및 유저 정보 요청
+        const response = await authAPI.login(form);
+        const token = response?.headers?.authorization?.split(' ')[1];
+        if (token) {
+            localStorage.setItem('accessToken', token); // ✅ 저장 명확히
+            const res = await axios.get('/user/me');
+            setUser(res.data);                          // ✅ user 상태 업데이트 → 리렌더 유도\
+        }
     };
 
-    // 로그아웃 처리
     const logout = async () => {
-        await authAPI.logout();
-        localStorage.removeItem('accessToken');
-        setUser(null);
+        try {
+            await axios.post('/auth/logout'); // ✅ 먼저 로그아웃 요청
+        } catch (err) {
+            // 로그아웃 요청은 실패해도 무시 가능 (예: 이미 만료된 토큰)
+            console.warn('로그아웃 요청 중 에러 (무시 가능):', err);
+        } finally {
+            localStorage.removeItem('accessToken'); // ✅ 토큰 제거는 마지막에
+            setUser(null);
+            navigate('/');
+        }
     };
 
     const isAuthenticated = !!user;
@@ -55,5 +67,4 @@ export const AuthProvider = ({ children }) => {
     );
 };
 
-// 3. 커스텀 훅: 다른 컴포넌트에서 사용할 수 있도록 export
 export const useAuth = () => useContext(AuthContext);

@@ -29,9 +29,17 @@ const Layout = ({ children }) => {
                     <div className="md:hidden">
                         <button
                             onClick={() => setMenuOpen(!menuOpen)}
-                            className="text-gray-300 hover:text-white"
+                            className="text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-custom"
                         >
-                            <i className="fas fa-bars text-xl"></i>
+                            <svg
+                                className="h-6 w-6"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
                         </button>
                     </div>
 
@@ -77,37 +85,22 @@ const Layout = ({ children }) => {
 
                 {/* 모바일 메뉴 */}
                 {menuOpen && (
-                    <div className="md:hidden px-4 pt-2 pb-4 space-y-2 bg-[#1E1E1E]">
-                        <Link
-                            to="/recommend"
-                            className="block text-gray-300 hover:text-white text-sm"
-                        >
+                    <div className="md:hidden px-4 py-4 space-y-3 bg-[#1E1E1E] border-t border-gray-700 transition-all duration-300 ease-in-out">
+                        <Link to="/recommend" className="block text-gray-300 hover:text-white text-base py-2 border-b border-gray-700">
                             추천
                         </Link>
-                        <Link
-                            to="/together"
-                            className="block text-gray-300 hover:text-white text-sm"
-                        >
+                        <Link to="/together" className="block text-gray-300 hover:text-white text-base py-2 border-b border-gray-700">
                             같이보기
                         </Link>
-                        <Link
-                            to="/search"
-                            className="block text-gray-300 hover:text-white text-sm"
-                        >
+                        <Link to="/search" className="block text-gray-300 hover:text-white text-base py-2 border-b border-gray-700">
                             검색
                         </Link>
                         {isAuthenticated ? (
-                            <Link
-                                to="/mypage"
-                                className="block text-gray-300 hover:text-white text-sm"
-                            >
+                            <Link to="/mypage" className="block text-gray-300 hover:text-white text-base py-2">
                                 MY
                             </Link>
                         ) : (
-                            <Link
-                                to="/login"
-                                className="block text-white bg-custom rounded px-4 py-2 text-sm"
-                            >
+                            <Link to="/login" className="block bg-custom text-white rounded px-4 py-2 text-base text-center">
                                 로그인
                             </Link>
                         )}

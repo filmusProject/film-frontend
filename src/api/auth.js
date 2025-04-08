@@ -1,37 +1,32 @@
 // src/api/auth.js
-// 로그인 및 로그아웃 관련 API 요청 함수
+import axiosInstance from '../utils/axiosInstance';
 
-import axios from '../utils/axiosInstance';
+// 로그인 요청
+export const login = async (email, password) => {
+    const response = await axiosInstance.post(
+        '/auth/login',
+        { email, password },
+        { withCredentials: true }
+    );
 
-/**
- * 로그인 요청 함수
- * @param {Object} form - 사용자 입력 값 { username, password }
- * @returns {Promise<Response>}
- */
-export const login = async (form) => {
-    // 백엔드로 로그인 요청 보냄
-    const response = await axios.post('/auth/login', form, {
-        withCredentials: true, // ✅ Refresh Token을 쿠키로 받기 위해 설정
-    });
+    // 응답 헤더에서 accessToken 추출
+    const accessToken = response.headers['authorization']?.split(' ')[1];
 
-    // Access Token은 응답의 body 또는 헤더에 포함될 수 있음
-    const accessToken = response.data.accessToken || response.headers['authorization'];
-
-    // Access Token을 localStorage에 저장
     if (accessToken) {
         localStorage.setItem('accessToken', accessToken);
     }
 
-    return response;
+    return response.data;
 };
 
-/**
- * 로그아웃 요청 함수
- */
-export const logout = async () => {
-    // 서버에 refresh token 삭제 요청
-    await axios.post('/auth/logout', {}, { withCredentials: true });
+// 사용자 정보 요청 (GET /user/me)
+export const getMyInfo = async () => {
+    const response = await axiosInstance.get('/user/me');
+    return response.data;
+};
 
-    // 클라이언트에서도 access token 제거
+// 로그아웃
+export const logout = async () => {
     localStorage.removeItem('accessToken');
+    await axiosInstance.post('/auth/logout', {}, { withCredentials: true });
 };

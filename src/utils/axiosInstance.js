@@ -1,49 +1,34 @@
+// src/utils/axiosInstance.js
 import axios from 'axios';
 
-const instance = axios.create({
-    baseURL: '/api', // proxy: "https://localhost:8443"가 처리
-    withCredentials: true, // 쿠키/세션 전송 위해 필요
+const axiosInstance = axios.create({
+    baseURL: 'https://api.filmus.o-r.kr/api',
+    withCredentials: true, // refreshToken 쿠키 전송 허용
 });
 
-instance.interceptors.request.use(
+// 요청 전에 accessToken을 헤더에 추가
+axiosInstance.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('accessToken'); // "Bearer eyJ..." 형태
-
+        const token = localStorage.getItem('accessToken');
         if (token) {
-            // 이미 "Bearer "로 시작한다면 그대로 사용
-            if (token.startsWith('Bearer ')) {
-                config.headers.Authorization = token;
-            } else {
-                // 그렇지 않다면 "Bearer " prefix 붙이기
-                config.headers.Authorization = `Bearer ${token}`;
-            }
+            config.headers.Authorization = `Bearer ${token}`;
         }
-
         return config;
     },
-    (error) => Promise.reject(error)
+    (error) => {
+        return Promise.reject(error);
+    }
 );
 
-
-instance.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-        const originalRequest = error.config;
-        if (error.response?.status === 401 && !originalRequest._retry) {
-            originalRequest._retry = true;
-            try {
-                // refresh
-                const refresh = await axios.post('/api/token/refresh', null, { withCredentials: true });
-                const newAccessToken = refresh.data.accessToken;
-                localStorage.setItem('accessToken', newAccessToken);
-                originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-                return instance(originalRequest);
-            } catch (err) {
-                console.error('토큰 재발급 실패:', err);
-            }
+axiosInstance.interceptors.response.use(
+    response => response,
+    error => {
+        if (error.response?.status === 401) {
+            localStorage.removeItem('accessToken');
+            window.location.href = navigate('/login')
         }
         return Promise.reject(error);
     }
 );
 
-export default instance;
+export default axiosInstance;
