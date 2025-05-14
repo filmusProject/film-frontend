@@ -1,48 +1,73 @@
-name: Deploy to S3 + CloudFront
+name: Deploy Frontend to S3 + CloudFront
 
 on:
   push:
-    branches: [ master ] # 원하는 브랜치
+    branches: [ master ]   # ← 배포 브랜치
+
+env:
+  BUCKET_NAME: filmus-frontend
+  DISTRIBUTION_ID: EAQ2VUFE0IWRE
+  AWS_REGION: ap-southeast-2
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    env:
-      BUCKET_NAME: filmus-frontend
-      DISTRIBUTION_ID: EAQ2VUFE0IWRE
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      # 1) 소스 체크아웃
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
+      # 2) Node 설정 + npm 캐시
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
+          cache: "npm"
 
+      # 3) 의존성 설치
       - name: Install dependencies
         run: npm ci
 
+      # 4) 프로덕션 환경변수 주입 (.env.*는 깃에 올리지 않음)
       - name: Create .env.production
         run: |
           echo "REACT_APP_API_BASE_URL=https://api.filmus.o-r.kr/api" >> .env.production
+          # 필요한 변수를 계속 echo 로 추가
 
+      # 5) 빌드
       - name: Build React app
         run: npm run build
 
+      # 6) AWS 자격 증명 설정
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-southeast-2
+          aws-region: ${{ env.AWS_REGION }}
 
-      - name: Deploy to S3
-        run: aws s3 sync build/ s3://$BUCKET_NAME --delete
+      # 7‑A) 정적 자산 장기 캐시(1y) + index.html 무캐시 업로드
+      - name: Upload static assets to S3
+        run: |
+          # 정적 파일 (js/css 등) – 캐시 길게
+          aws s3 sync build/ s3://$BUCKET_NAME --exclude "index.html" \
+            --cache-control "public, max-age=31536000, immutable" --delete
+          # index.html – 즉시 무효화
+          aws s3 cp build/index.html s3://$BUCKET_NAME/index.html \
+            --cache-control "no-cache, no-store, must-revalidate"
+          
+      # 7‑B) (옵션) 모든 파일 한꺼번에 업로드하고 캐시 설정 무시하고 싶다면 위 step 대신:
+      # run: aws s3 sync build/ s3://$BUCKET_NAME --delete
 
+      # 8) CloudFront 캐시 무효화 – index.html 만
       - name: Invalidate CloudFront cache
         run: |
           aws cloudfront create-invalidation \
             --distribution-id $DISTRIBUTION_ID \
-            --paths "/*"
+            --paths "/index.html"
+          # 전체 무효화가 필요하면 --paths "/*"
+
+      # 9) 완료 메시지
+      - name: Deployment finished
+        run: echo "✅  Frontend deployed to S3 and CloudFront distribution invalidated."
