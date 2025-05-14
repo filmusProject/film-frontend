@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Layout from '../components/Layout';
+import Layout from '../components/layout/Layout';
 
 const RecommendPage = () => {
   const topics = ['감성적인 밤', '비 오는 날', '스트레스 해소', '따뜻한 가족 이야기'];

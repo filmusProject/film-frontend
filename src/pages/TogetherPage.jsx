@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Layout from '../components/Layout'; // 경로는 src/pages에서 시작한다고 가정
+import Layout from '../components/layout/Layout'; // 경로는 src/pages에서 시작한다고 가정
 
 const TogetherPage = () => {
   const [roomCode, setRoomCode] = useState('');
