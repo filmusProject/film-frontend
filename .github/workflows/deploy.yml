@@ -34,6 +34,11 @@ jobs:
         run: |
           echo "REACT_APP_API_BASE_URL=https://api.filmus.o-r.kr/api" >> .env.production
 
+      - name: Debug — list src directory
+        run: |
+          echo "===== SRC LIST ====="
+          ls -la src
+
       # 5) 빌드
       - name: Build React app
         run: npm run build
