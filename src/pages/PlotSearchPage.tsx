@@ -35,46 +35,6 @@ interface PlotSearchResponse {
     matchedMovies: Movie[];
 }
 
-/* ───────── MOCK 데이터 & 플래그 ───────── */
-const USE_MOCK = true; // true → 항상 목 사용, false → 실제 API 우선
-const mockPlotData: PlotSearchResponse = {
-    extractedKeywords: [
-        { category: "theme", subcategory: "magic", keyword: "마법", score: 0.93 },
-        { category: "place", subcategory: "school", keyword: "학교", score: 0.86 },
-        { category: "theme", subcategory: "growth", keyword: "성장", score: 0.72 },
-    ],
-    summary: "마법 학교에서 성장하는 주인공의 모험을 그린 판타지.",
-    matchedMovies: [
-        {
-            movieId: "tt0241527",
-            movieSeq: "0001",
-            title: "해리 포터와 마법사의 돌",
-            year: "2001",
-            posterUrl:
-                "https://image.tmdb.org/t/p/w342/uc9Yl9PeY6ZfsCA7n1dqfBzL5qo.jpg",
-            matchedKeywords: ["마법", "학교"],
-        },
-        {
-            movieId: "tt0417741",
-            movieSeq: "0002",
-            title: "해리 포터와 불사조 기사단",
-            year: "2007",
-            posterUrl:
-                "https://image.tmdb.org/t/p/w342/aWxwnYoe8p2d2fcxOqtvAtJ72Rw.jpg",
-            matchedKeywords: ["마법", "학교", "성장"],
-        },
-        {
-            movieId: "tt0993846",
-            movieSeq: "0003",
-            title: "해리 포터와 혼혈 왕자",
-            year: "2009",
-            posterUrl:
-                "https://image.tmdb.org/t/p/w342/z7uo9zmQdQwU5ZJHFpv2Upl30i1.jpg",
-            matchedKeywords: ["마법", "성장"],
-        },
-    ],
-};
-
 /* ───────── 컴포넌트 ───────── */
 const PlotSearchPage: React.FC = () => {
     const { theme } = useTheme();
@@ -99,43 +59,29 @@ const PlotSearchPage: React.FC = () => {
         setSummary(data.summary);
     };
 
-    /* 가짜 지연 */
-    const simulateLatency = (ms: number) =>
-        new Promise((res) => setTimeout(res, ms));
-
     /* API 호출 (또는 MOCK) */
     useEffect(() => {
         const fetchPlotSearch = async () => {
             // ① query가 비어 있을 때
             if (!query.trim()) {
-                if (USE_MOCK) {
-                    injectData(mockPlotData);
-                } else {
-                    setMovies([]);
-                    setKeywords([]);
-                    setSummary("");
-                }
+                setMovies([]);
+                setKeywords([]);
+                setSummary("");
                 return;
             }
 
-            // ② query가 있는 경우
             try {
                 setLoading(true);
-
-                if (USE_MOCK) {
-                    await simulateLatency(400);
-                    injectData(mockPlotData);
-                } else {
-                    const { data } = await axios.post<PlotSearchResponse>(
-                        "/movie/nlp/search",
-                        { description: query.trim() }
-                    );
-                    injectData(data);
-                }
+                const { data } = await axios.post<PlotSearchResponse>(
+                    "/movie/nlp/search",
+                    { description: query.trim() }
+                );
+                injectData(data);
             } catch (err) {
                 console.error("줄거리 검색 오류:", err);
-                // 실패 시에도 목 데이터로 폴백
-                injectData(mockPlotData);
+                setMovies([]);
+                setKeywords([]);
+                setSummary("");
             } finally {
                 setLoading(false);
             }
