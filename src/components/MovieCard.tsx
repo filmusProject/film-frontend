@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 export interface MovieCardProps {
     movie: {
@@ -7,20 +8,25 @@ export interface MovieCardProps {
         posterUrl: string;
         title: string;
         year: string;
-        matchedKeywords?: string[];   // ★ 추가
+        matchedKeywords?: string[];
     };
 }
 
 const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
     const {
+        movieId,
+        movieSeq,
         posterUrl,
         title,
         year,
-        matchedKeywords = [],        // 기본값
+        matchedKeywords = [],
     } = movie;
 
     return (
-        <div className="flex flex-col h-full rounded-lg overflow-hidden bg-white dark:bg-gray-800 shadow-md">
+        <Link
+            to={`/movie/${movieId}/${movieSeq}`}
+            className="flex flex-col h-full rounded-lg overflow-hidden bg-white dark:bg-gray-800 shadow-md hover:shadow-lg transition"
+        >
             {/* ── 포스터 ─────────────────────────────── */}
             <img
                 src={posterUrl || "/no-poster.png"}
@@ -29,7 +35,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
             />
 
             {/* ── 기본 정보 ─────────────────────────── */}
-            <div className="flex‑1 flex flex-col p-3">
+            <div className="flex-1 flex flex-col p-3">
                 <h3 className="font-semibold text-sm mb-1 line-clamp-2">{title}</h3>
                 <span className="text-xs text-gray-500 dark:text-gray-400">{year}</span>
 
@@ -47,7 +53,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
                     </div>
                 )}
             </div>
-        </div>
+        </Link>
     );
 };
 
