@@ -8,8 +8,7 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import HomePage from "./pages/HomePage"; // ✅ 이제 정상 인식
 import SearchPage from "./pages/SearchPage";
 import MovieDetailPage from "./pages/MovieDetailPage";
-import RecommendPage from "./pages/RecommendPage";
-import TogetherPage from "./pages/TogetherPage";
+// import RecommendPage from "./pages/RecommendPage";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import Mypage from "./pages/Mypage";
@@ -25,8 +24,8 @@ function App() {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/search" element={<SearchPage />} />
                 <Route path="/movie-detail/:movieId/:movieSeq" element={<MovieDetailPage />} />
-                <Route path="/recommend" element={<RecommendPage />} />
-                <Route path="/together" element={<TogetherPage />} />
+                {/*<Route path="/recommend" element={<RecommendPage />} />*/}
+                {/*<Route path="/together" element={<TogetherPage />} />*/}
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<SignupPage />} />
                 <Route path="/find-username" element={<FindUsernamePage />} />
