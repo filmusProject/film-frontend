@@ -2,7 +2,7 @@
    src/pages/MovieDetailPage.tsx
 ------------------------------------------------ */
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import axios from '../utils/axiosInstance';
 import Layout from '../components/layout/Layout';
 import { useTheme } from '../contexts/ThemeContext';
@@ -45,10 +45,13 @@ interface Review {
   content: string;
 }
 
-/* ===== 컴포넌트 ===== */
 const MovieDetailPage: React.FC = () => {
-  /* --- 라우터 파라미터 & 컨텍스트 --- */
-  const { movieId, movieSeq } = useParams();
+  /* --- 라우터 파라미터를 쿼리에서 파싱 --- */
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const movieId = params.get('movieId');
+  const movieSeq = params.get('movieSeq');
+
   const { theme } = useTheme();
   const { isAuthenticated } = useAuth();
 

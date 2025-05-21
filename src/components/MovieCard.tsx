@@ -24,7 +24,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
 
     return (
         <Link
-            to={`/movie/${movieId}/${movieSeq}`}
+            to={`/movie-detail?movieId=${movieId}&movieSeq=${movieSeq}`}
             className="flex flex-col h-full rounded-lg overflow-hidden bg-white dark:bg-gray-800 shadow-md hover:shadow-lg transition"
         >
             {/* ── 포스터 ─────────────────────────────── */}

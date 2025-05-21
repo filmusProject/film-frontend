@@ -23,7 +23,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/search" element={<SearchPage />} />
-                <Route path="/movie-detail/:movieId/:movieSeq" element={<MovieDetailPage />} />
+                <Route path="/movie-detail" element={<MovieDetailPage />} />
                 {/*<Route path="/recommend" element={<RecommendPage />} />*/}
                 {/*<Route path="/together" element={<TogetherPage />} />*/}
                 <Route path="/login" element={<LoginPage />} />
