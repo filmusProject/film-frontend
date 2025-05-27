@@ -8,7 +8,6 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import HomePage from "./pages/HomePage"; // ✅ 이제 정상 인식
 import SearchPage from "./pages/SearchPage";
 import MovieDetailPage from "./pages/MovieDetailPage";
-// import RecommendPage from "./pages/RecommendPage";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import Mypage from "./pages/Mypage";
@@ -16,6 +15,7 @@ import FindUsernamePage from "./pages/FindUsernamePage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ChangePasswordPage from "./pages/ChangePasswordPage";
 import PlotSearchPage from "./pages/PlotSearchPage";
+import RecommendPage from "./pages/RecommendPage";
 
 function App() {
     return (
@@ -24,7 +24,7 @@ function App() {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/search" element={<SearchPage />} />
                 <Route path="/movie-detail" element={<MovieDetailPage />} />
-                {/*<Route path="/recommend" element={<RecommendPage />} />*/}
+                <Route path="/recommend" element={<RecommendPage />} />
                 {/*<Route path="/together" element={<TogetherPage />} />*/}
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<SignupPage />} />

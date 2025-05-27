@@ -4,6 +4,8 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import './styles/global.css';
 import './styles/variables.css';
+import "swiper/css";
+import "swiper/css/navigation";
 import './index.css'; // Tailwind 스타일 포함
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';

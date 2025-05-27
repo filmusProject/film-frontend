@@ -6,8 +6,12 @@ module.exports = {
         sans: ["'Noto Sans KR'", "sans-serif"]
       },
       colors: {
-        background: "#121212",
-        accent: "#FF4C29",
+        /* 반투명 카드 배경 – 라이트·다크 공통 */
+        "card-light": "rgba(255,255,255,0.65)",
+        "card-dark":  "rgba(255,255,255,0.06)",
+      },
+      backdropBlur: {
+        md: "12px",
       },
       borderRadius: {
         DEFAULT: "0.5rem",
