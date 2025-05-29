@@ -1,6 +1,6 @@
 /* -------------------------------------------
    src/pages/SearchPage.tsx
-   ------------------------------------------- */
+------------------------------------------- */
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import * as echarts from "echarts";
@@ -24,12 +24,15 @@ interface Movie {
 
 /* ---------- 고정 리스트 ---------- */
 const GENRES = [
-    "Action","Adventure","Animation","Comedy","Crime","Documentary","Drama","Family",
-    "Fantasy","History","Horror","Music","Mystery","Romance","Sci‑Fi","Thriller","War","Western",
+    "Action", "Adventure", "Animation", "Comedy", "Crime",
+    "Documentary", "Drama", "Family", "Fantasy", "History",
+    "Horror", "Music", "Mystery", "Romance", "Sci-Fi",
+    "Thriller", "War", "Western",
 ];
 const COUNTRIES = [
-    "United States","United Kingdom","France","Japan","South Korea","India","Germany",
-    "Italy","Spain","Canada","Australia","Brazil","China","Russia",
+    "United States","United Kingdom","France","Japan","South Korea",
+    "India","Germany","Italy","Spain","Canada","Australia",
+    "Brazil","China","Russia",
 ];
 
 /* ---------- 컴포넌트 ---------- */
@@ -41,15 +44,18 @@ const SearchPage: React.FC = () => {
     const navigate  = useNavigate();
     const location  = useLocation();
 
-    /* 검색 상태 */
-    const [query, setQuery]   = useState(() => new URLSearchParams(location.search).get("query") || "");
+    /* ───── 검색 상태 ───── */
+    const initialQuery = new URLSearchParams(location.search).get("query") || "";
+    const [inputValue, setInputValue] = useState(initialQuery);         // ⚠️ 타이핑용
+    const [query,      setQuery]      = useState(initialQuery);         // ⚠️ 실제 검색어
+
     const [movies,setMovies]  = useState<Movie[]>([]);
     const [page,  setPage]    = useState(1);
     const [total, setTotal]   = useState(0);
     const [loading,setLoading]= useState(false);
 
-    /* 필터 상태 */
-    const [isFilterOpen,setFilter] = useState(false);          // 데스크톱 & 모바일 공통
+    /* ───── 필터 상태 ───── */
+    const [isFilterOpen,setFilter] = useState(false);
     const [genres,setGenres]       = useState<string[]>([]);
     const [yearRange,setYears]     = useState<[number,number]>([1990,2025]);
     const [minRating,setRating]    = useState(0);
@@ -66,9 +72,8 @@ const SearchPage: React.FC = () => {
 
     /* ---------- API ---------- */
     const fetchSearch = useCallback(async (reset=false)=>{
-        if (!query.trim()) {
-            setMovies([]);
-            setTotal(0);
+        if (!query.trim()) {                                            // query 기준
+            setMovies([]); setTotal(0);
             return;
         }
         try{
@@ -99,10 +104,11 @@ const SearchPage: React.FC = () => {
     useEffect(()=>{ fetchSearch(); },[fetchSearch]);
 
     /* ---------- 핸들러 ---------- */
-    const handleSearch = (e:React.FormEvent) => {
-        e.preventDefault();
-        navigate(`/search?query=${encodeURIComponent(query)}`);
-        fetchSearch(true);
+    const handleSearch = (e?:React.FormEvent) => {
+        e?.preventDefault();
+        if (!inputValue.trim()) return;
+        setQuery(inputValue.trim());                                     // ⚠️ 검색 확정
+        navigate(`/search?query=${encodeURIComponent(inputValue.trim())}`);
     };
     const toggleGenre = (g:string)=>setGenres(prev=>prev.includes(g)?prev.filter(x=>x!==g):[...prev,g]);
     const resetFilters = ()=> {
@@ -112,8 +118,7 @@ const SearchPage: React.FC = () => {
 
     /* ---------- ECharts ---------- */
     useEffect(()=>{
-        const el=document.getElementById("rating-chart");
-        if(!el) return;
+        const el=document.getElementById("rating-chart"); if(!el) return;
         const chart=echarts.init(el);
         const option:any = {
             animation:false,
@@ -137,63 +142,19 @@ const SearchPage: React.FC = () => {
     return (
         <Layout>
             <div className={`min-h-screen ${theme==="dark"?"bg-gray-900 text-white":"bg-gray-50 text-gray-900"}`}>
-                {/* ===== 메인 ===== */}
                 <main className="container mx-auto px-4 py-10">
-                    {/*/!* ───────── 탭 토글 ───────── *!/*/}
-                    {/*<div className="flex justify-center gap-2 mb-4">*/}
-                    {/*    <button*/}
-                    {/*        type="button"*/}
-                    {/*        disabled*/}
-                    {/*        className="px-5 py-2 rounded-full text-sm font-medium bg-[#FF574F] text-white cursor-default"*/}
-                    {/*    >*/}
-                    {/*        기본 검색*/}
-                    {/*    </button>*/}
-                    {/*    <button*/}
-                    {/*        type="button"*/}
-                    {/*        onClick={() =>*/}
-                    {/*            navigate(`/plot-search?query=${encodeURIComponent(query.trim())}`)*/}
-                    {/*        }*/}
-                    {/*        className="px-5 py-2 rounded-full text-sm font-medium bg-gray-200 dark:bg-gray-700 hover:bg-opacity-80"*/}
-                    {/*    >*/}
-                    {/*        줄거리 검색*/}
-                    {/*    </button>*/}
-                    {/*</div>*/}
 
-                    {/*/!* ─── 검색 & 버튼 ─── *!/*/}
-                    {/*<div className="max-w-3xl mx-auto mb-8">*/}
-                    {/*    <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4 items-center">*/}
-                    {/*        <div className="relative w-full md:w-[500px]">*/}
-                    {/*            <input*/}
-                    {/*                type="text"*/}
-                    {/*                placeholder="Search for movies..."*/}
-                    {/*                className="w-full py-3 px-5 pl-12 rounded-xl border-none focus:ring-2 focus:ring-[#FF574F] bg-white dark:bg-gray-800 shadow-md text-base"*/}
-                    {/*                value={query}*/}
-                    {/*                onChange={e=>setQuery(e.target.value)}*/}
-                    {/*            />*/}
-                    {/*            <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg"></i>*/}
-                    {/*        </div>*/}
-
-                    {/*        /!* 필터 토글 버튼 *!/*/}
-                    {/*        <button*/}
-                    {/*            type="button"*/}
-                    {/*            onClick={()=>setFilter(prev=>!prev)}*/}
-                    {/*            className="flex items-center gap-2 py-3 px-6 rounded-xl bg-[#FF574F] text-white font-medium hover:bg-opacity-90 active:scale-95 transition-all shadow-md !rounded-button whitespace-nowrap"*/}
-                    {/*        >*/}
-                    {/*            <i className="fas fa-filter"></i><span>Filters</span>*/}
-                    {/*        </button>*/}
-                    {/*    </form>*/}
-                    {/*</div>*/}
-
+                    {/* 검색바 (inputValue ↔ query 분리) */}
                     <SearchBar
-                        value={query}
-                        onChange={setQuery}
-                        onSubmit={handleSearch}
+                        value={inputValue}                         /* ⚠️ 타이핑용 */
+                        onChange={setInputValue}
+                        onSubmit={handleSearch}                    /* Enter/버튼 → handleSearch */
                         showFilterBtn
                         onFilterClick={() => setFilter((p) => !p)}
                         currentTab="basic"
                         onTabClick={(tab) => {
                             if (tab === "plot") {
-                                navigate(`/plot-search?query=${encodeURIComponent(query.trim())}`);
+                                navigate(`/plot-search?query=${encodeURIComponent(inputValue.trim())}`);
                             }
                         }}
                     />

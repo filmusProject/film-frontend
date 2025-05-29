@@ -3,7 +3,8 @@
  * -------------------------------------------------
  * 1)  USE_MOCK 플래그로 백엔드 없이도 화면 테스트 가능
  * 2)  query 값이 비어있어도 목 데이터가 바로 보이도록 수정
- * 3)  기존 구조는 그대로 유지(실제 API → 실패 시 목 데이터 폴백)
+ * 3)  입력용 inputValue ↔ 실제 검색어 query 분리 (Enter/버튼 클릭 시만 API 호출)
+ * 4)  기존 구조는 그대로 유지(실제 API → 실패 시 목 데이터 폴백)
  */
 
 import React, { useEffect, useState } from "react";
@@ -41,10 +42,10 @@ const PlotSearchPage: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
-    /* 검색어 상태 */
-    const [query, setQuery] = useState(
-        () => new URLSearchParams(location.search).get("query") || ""
-    );
+    /* 🔑 입력값(inputValue)과 실제 검색어(query) 분리 */
+    const initialQuery = new URLSearchParams(location.search).get("query") || "";
+    const [inputValue, setInputValue] = useState(initialQuery);
+    const [query, setQuery] = useState(initialQuery);
 
     /* 결과 상태 */
     const [movies, setMovies] = useState<Movie[]>([]);
@@ -62,7 +63,6 @@ const PlotSearchPage: React.FC = () => {
     /* API 호출 (또는 MOCK) */
     useEffect(() => {
         const fetchPlotSearch = async () => {
-            // ① query가 비어 있을 때
             if (!query.trim()) {
                 setMovies([]);
                 setKeywords([]);
@@ -90,12 +90,12 @@ const PlotSearchPage: React.FC = () => {
         fetchPlotSearch();
     }, [query]);
 
-    /* 검색 제출 */
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!query.trim()) return;
-        navigate(`/plot-search?query=${encodeURIComponent(query.trim())}`);
-        // query state는 이미 업데이트되어 있으므로 useEffect 재실행
+    /* 검색 제출: Enter 또는 검색 버튼 */
+    const handleSubmit = (e?: React.FormEvent) => {
+        e?.preventDefault();
+        if (!inputValue.trim()) return;
+        setQuery(inputValue.trim());                           // 실제 검색어 업데이트
+        navigate(`/plot-search?query=${encodeURIComponent(inputValue.trim())}`);
     };
 
     /* ───────── JSX ───────── */
@@ -111,13 +111,13 @@ const PlotSearchPage: React.FC = () => {
                 <main className="container mx-auto px-4 py-10 max-w-5xl">
                     {/* 검색창 & 탭 토글 */}
                     <SearchBar
-                        value={query}
-                        onChange={setQuery}
-                        onSubmit={handleSubmit}
+                        value={inputValue}
+                        onChange={setInputValue}                // 타이핑 → inputValue만 변경
+                        onSubmit={handleSubmit}                 // 확정 시 query 업데이트
                         currentTab="plot"
                         onTabClick={(tab) => {
                             if (tab === "basic") {
-                                navigate(`/search?query=${encodeURIComponent(query.trim())}`);
+                                navigate(`/search?query=${encodeURIComponent(inputValue.trim())}`);
                             }
                         }}
                     />

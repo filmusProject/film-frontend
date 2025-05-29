@@ -29,30 +29,30 @@ const SearchBar: React.FC<Props> = ({
     <form onSubmit={onSubmit} className="flex flex-col items-center gap-4 mb-8">
         {/* ───────── 탭 토글 ───────── */}
         <div className="flex gap-2">
-            <button
-                type="button"
-                onClick={() => onTabClick("basic")}
-                disabled={currentTab === "basic"}
-                className={`px-5 py-2 rounded-full text-sm font-medium ${
-                    currentTab === "basic"
-                        ? "bg-[#FF574F] text-white cursor-default"
-                        : "bg-gray-200 dark:bg-gray-700 hover:bg-opacity-80"
-                }`}
-            >
-                기본 검색
-            </button>
-            <button
-                type="button"
-                onClick={() => onTabClick("plot")}
-                disabled={currentTab === "plot"}
-                className={`px-5 py-2 rounded-full text-sm font-medium ${
-                    currentTab === "plot"
-                        ? "bg-[#FF574F] text-white cursor-default"
-                        : "bg-gray-200 dark:bg-gray-700 hover:bg-opacity-80"
-                }`}
-            >
-                줄거리 검색
-            </button>
+            {(["basic", "plot"] as const).map((tab) => {
+                const isActive = currentTab === tab;
+                return (
+                    <button
+                        key={tab}
+                        type="button"
+                        onClick={() => onTabClick(tab)}
+                        disabled={isActive}
+                        className={
+                            isActive
+                                ? "px-5 py-2 rounded-full text-sm font-medium bg-[#FF574F] text-white cursor-default"
+                                : [
+                                    "px-5 py-2 rounded-full text-sm font-medium",
+                                    // ⬇︎ 미선택 상태 : 테마 무관 회색 배경 + 검정 글자
+                                    "bg-gray-200 text-gray-900",
+                                    "dark:bg-gray-200 dark:text-gray-900",
+                                    "hover:bg-opacity-80",
+                                ].join(" ")
+                        }
+                    >
+                        {tab === "basic" ? "기본 검색" : "줄거리 검색"}
+                    </button>
+                );
+            })}
         </div>
 
         {/* ───────── 검색창 & 필터 ───────── */}
@@ -62,7 +62,13 @@ const SearchBar: React.FC<Props> = ({
                 <input
                     type="text"
                     placeholder="Search for movies..."
-                    className="w-full py-3 px-5 pl-12 rounded-xl border-none focus:ring-2 focus:ring-[#FF574F] bg-white dark:bg-gray-800 shadow-md text-base"
+                    className="
+            w-full py-3 px-5 pl-12 rounded-xl border-none shadow-md
+            bg-white dark:bg-white          /* 배경 고정 */
+            text-gray-900 placeholder-gray-500
+            dark:text-gray-900 dark:placeholder-gray-500  /* 다크모드도 동일 색 */
+            focus:ring-2 focus:ring-[#FF574F]
+          "
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
                 />
