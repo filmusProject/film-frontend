@@ -1,5 +1,5 @@
 /* -------------------------------------------
-   src/pages/LoginPage.tsx
+   src/pages/LoginPage.tsx  (redirect 버전)
    ------------------------------------------- */
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -8,8 +8,7 @@ import { useTheme } from "../contexts/ThemeContext";
 import { useAuth }  from "../contexts/AuthContext";
 
 /**
- * 🔗 카카오 OAuth2 인증 URL
- *  - 프론트에서 팝업으로 열어 인증을 시작합니다.
+ * 🔗 카카오 OAuth2 로그인 시작 URL (리디렉션)
  */
 const KAKAO_LOGIN_URL = "https://api.filmus.o-r.kr/oauth2/authorization/kakao";
 
@@ -44,39 +43,20 @@ const LoginPage: React.FC = () => {
         }
     };
 
-    /* ---------- 카카오 팝업 ---------- */
-    const openKakaoPopup = () => {
-        const popup = window.open(
-            KAKAO_LOGIN_URL,
-            "kakaoLogin",
-            "width=480,height=720,resizable=yes,scrollbars=yes,status=no"
-        );
-        // 팝업이 차단된 경우 fallback으로 전체 리다이렉트
-        if (!popup || popup.closed || typeof popup.closed === "undefined") {
-            window.location.href = KAKAO_LOGIN_URL;
-        }
-    };
-
     /* ---------- UI ---------- */
     return (
         <Layout>
-            {/* 🔸 전체 화면을 차지하고 중앙 정렬 */}
+            {/* 🔸 전체 화면 중앙 정렬 */}
             <div
-                className={`
-          fixed inset-0 flex items-center justify-center
-          ${theme === "dark"
-                    ? "bg-gradient-to-br from-gray-900 to-gray-800"
-                    : "bg-gradient-to-br from-gray-50 to-gray-100"}
-        `}
+                className={`fixed inset-0 flex items-center justify-center ${
+                    theme === "dark"
+                        ? "bg-gradient-to-br from-gray-900 to-gray-800"
+                        : "bg-gradient-to-br from-gray-50 to-gray-100"
+                }`}
             >
-                {/* 카드 : clamp(90vw, 100%, 28rem) 정도로 자연스러운 폭 */}
+                {/* 카드 */}
                 <div
-                    className={`
-            w-[min(90vw,28rem)] sm:w-[24rem]
-            backdrop-blur-xl backdrop-saturate-150
-            bg-white/70 dark:bg-gray-800/50
-            border border-white/20 shadow-lg rounded-xl p-8
-          `}
+                    className={`w-[min(90vw,28rem)] sm:w-[24rem] backdrop-blur-xl backdrop-saturate-150 bg-white/70 dark:bg-gray-800/50 border border-white/20 shadow-lg rounded-xl p-8`}
                 >
                     <header className="text-center mb-8">
                         <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
@@ -88,10 +68,7 @@ const LoginPage: React.FC = () => {
                     </header>
 
                     {/* 폼 */}
-                    <form
-                        onSubmit={handleSubmit}
-                        className={`space-y-6 ${error && "animate-shake"}`}
-                    >
+                    <form onSubmit={handleSubmit} className={`space-y-6 ${error && "animate-shake"}`}>
                         <Input
                             label="이메일"
                             id="email"
@@ -111,9 +88,7 @@ const LoginPage: React.FC = () => {
                             theme={theme}
                         />
 
-                        {error && (
-                            <p className="text-red-500 text-sm font-medium">{error}</p>
-                        )}
+                        {error && <p className="text-red-500 text-sm font-medium">{error}</p>}
 
                         <button
                             type="submit"
@@ -135,7 +110,7 @@ const LoginPage: React.FC = () => {
 
                     {/* 구분선 & 카카오 로그인 */}
                     <Divider theme={theme} />
-                    <KakaoButton onClick={openKakaoPopup} />
+                    <KakaoButton />
                 </div>
             </div>
         </Layout>
@@ -151,28 +126,20 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 const Input: React.FC<InputProps> = ({ label, id, error, theme, ...rest }) => (
     <div>
-        <label
-            htmlFor={id}
-            className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300"
-        >
+        <label htmlFor={id} className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
             {label}
         </label>
         <input
             id={id}
-            className={`
-        w-full px-4 py-3 rounded-lg border-none focus:ring-2 focus:ring-[#FF574F]
-        ${theme === "dark" ? "bg-gray-700/50 text-white" : "bg-white/50 text-black"}
-        text-sm ${error && "ring-2 ring-red-500"}
-      `}
+            className={`w-full px-4 py-3 rounded-lg border-none focus:ring-2 focus:ring-[#FF574F] ${
+                theme === "dark" ? "bg-gray-700/50 text-white" : "bg-white/50 text-black"
+            } text-sm ${error && "ring-2 ring-red-500"}`}
             {...rest}
         />
     </div>
 );
 
-const PageLink: React.FC<{ to: string; children: React.ReactNode }> = ({
-                                                                           to,
-                                                                           children,
-                                                                       }) => (
+const PageLink: React.FC<{ to: string; children: React.ReactNode }> = ({ to, children }) => (
     <Link to={to} className="text-[#FF574F] hover:underline">
         {children}
     </Link>
@@ -186,9 +153,7 @@ const Divider: React.FC<{ theme: "light" | "dark" }> = ({ theme }) => (
         <div className="relative flex justify-center text-sm">
       <span
           className={`px-4 ${
-              theme === "dark"
-                  ? "bg-gray-800/50 text-gray-400"
-                  : "bg-white/70 text-gray-500"
+              theme === "dark" ? "bg-gray-800/50 text-gray-400" : "bg-white/70 text-gray-500"
           }`}
       >
         또는
@@ -197,18 +162,17 @@ const Divider: React.FC<{ theme: "light" | "dark" }> = ({ theme }) => (
     </div>
 );
 
-interface KakaoButtonProps {
-    onClick: () => void;
-}
-const KakaoButton: React.FC<KakaoButtonProps> = ({ onClick }) => (
-    <button
-        type="button"
-        onClick={onClick}
+/**
+ * 카카오 버튼 – 클릭 시 전체 페이지 리디렉션
+ */
+const KakaoButton: React.FC = () => (
+    <a
+        href={KAKAO_LOGIN_URL}
         className="mt-6 w-full bg-[#FEE500] text-gray-800 font-medium py-3 rounded-lg flex items-center justify-center gap-2 transition active:scale-95"
     >
         <i className="fas fa-comment text-gray-800" />
         <span>카카오로 계속하기</span>
-    </button>
+    </a>
 );
 
 export default LoginPage;
