@@ -10,7 +10,7 @@ import { useAuth }  from "../contexts/AuthContext";
 /**
  * 🔗 카카오 OAuth2 로그인 시작 URL (리디렉션)
  */
-const KAKAO_LOGIN_URL = "https://api.filmus.o-r.kr/oauth2/authorization/kakao";
+const KAKAO_LOGIN_URL = "https://api.filmus.o-r.kr/login/oauth2/code/kakao";
 
 const LoginPage: React.FC = () => {
     /* ---------- 상태 ---------- */
