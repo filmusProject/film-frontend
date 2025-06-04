@@ -11,7 +11,7 @@ import { useAuth }  from "../contexts/AuthContext";
  * 🔗 카카오 OAuth2 인증 URL
  *  - 프론트에서 팝업으로 열어 인증을 시작합니다.
  */
-const KAKAO_LOGIN_URL = "https://api.filmus.o-r.kr/login/oauth2/code/kakao";
+const KAKAO_LOGIN_URL = "https://api.filmus.o-r.kr/oauth2/authorization/kakao";
 
 const LoginPage: React.FC = () => {
     /* ---------- 상태 ---------- */
