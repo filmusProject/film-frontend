@@ -131,7 +131,7 @@ const HomePage: React.FC = () => {
         await axiosInstance.get("/movie/search", {
           params: { query: query.trim() },
         });
-        navigate(`/search?query=${encodeURIComponent(query.trim())}`);
+        navigate(`/search?engine=es&query=${encodeURIComponent(query.trim())}`);
       } else {
         navigate(`/plot-search?query=${encodeURIComponent(query.trim())}`);
       }

@@ -108,7 +108,7 @@ const SearchPage: React.FC = () => {
         e?.preventDefault();
         if (!inputValue.trim()) return;
         setQuery(inputValue.trim());                                     // ⚠️ 검색 확정
-        navigate(`/search?query=${encodeURIComponent(inputValue.trim())}`);
+        navigate(`/search?engine=es&query=${encodeURIComponent(inputValue.trim())}`);
     };
     const toggleGenre = (g:string)=>setGenres(prev=>prev.includes(g)?prev.filter(x=>x!==g):[...prev,g]);
     const resetFilters = ()=> {

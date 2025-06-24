@@ -117,7 +117,7 @@ const PlotSearchPage: React.FC = () => {
                         currentTab="plot"
                         onTabClick={(tab) => {
                             if (tab === "basic") {
-                                navigate(`/search?query=${encodeURIComponent(inputValue.trim())}`);
+                                navigate(`/search?engine=es&query=${encodeURIComponent(inputValue.trim())}`);
                             }
                         }}
                     />
