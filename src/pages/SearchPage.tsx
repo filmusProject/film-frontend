@@ -71,37 +71,46 @@ const SearchPage: React.FC = () => {
     const totalPages = Math.ceil(total / PER_PAGE);
 
     /* ---------- API ---------- */
-    const fetchSearch = useCallback(async (reset=false)=>{
-        if (!query.trim()) {                                            // query 기준
+    const fetchSearch = useCallback(async (reset = false) => {
+        if (!query.trim()) {                       // 검색어가 없으면 초기화
             setMovies([]); setTotal(0);
             return;
         }
-        try{
-            setLoading(true);
-            const curPage = reset?1:page;
 
-            const {data} = await axios.get("/movie/search",{
-                params:{
-                    query,
-                    page: curPage,
-                    genre:  genres.join(","),
-                    nation: country,
-                    releaseDts,releaseDte,keyword,type,
-                    rating: minRating,
-                    engine: "es",
-                }
-            });
+        try {
+            setLoading(true);
+            const curPage = reset ? 1 : page;
+
+            /* ⬇️ ① 전송할 params 객체를 동적으로 구성 */
+            const params: Record<string, any> = {
+                query,             // 필수
+                page: curPage,
+                rating: minRating, // 0이라도 괜찮으니 항상 보냄
+                engine: "es",      // 고정
+            };
+            if (genres.length) params.genre = genres.join(",");
+            if (country)        params.nation = country;
+            if (releaseDts)     params.releaseDts = releaseDts;
+            if (releaseDte)     params.releaseDte = releaseDte;
+            if (keyword)        params.keyword   = keyword;
+            if (type)           params.type      = type;
+
+            /* ⬇️ ② Axios 호출 */
+            const { data } = await axios.get("/movie/search", { params });
 
             setMovies(data.movies);
             setTotal(data.totalCount);
-            if(reset) setPage(1);
-        }catch(e){
-            console.error("검색 오류:",e);
-        }finally{
+            if (reset) setPage(1);
+        } catch (e) {
+            console.error("검색 오류:", e);
+        } finally {
             setLoading(false);
         }
-    },[query,page,genres,country,releaseDts,releaseDte,keyword,type,minRating]);
-
+    }, [
+        query, page, genres, country,
+        releaseDts, releaseDte, keyword, type,
+        minRating                                     // 의존성에 그대로 포함
+    ]);
     useEffect(()=>{ fetchSearch(); },[fetchSearch]);
 
     /* ---------- 핸들러 ---------- */
